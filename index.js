@@ -16,14 +16,38 @@ try {
 
     const jsonReport = JSON.parse(rawReport);
 
-    const methodsToReport = Object.keys(jsonReport.info.methods).map(key => {
-        if (contractsToReport.length === 0 || contractsToReport.includes(jsonReport.info.methods[key].contract)) {
-            return jsonReport.info.methods[key];
-        }
+
+    let htmlOutput = `<table>
+            <th>
+                <td>Contract</td>
+                <td>Method</td>
+                <td>Max</td>
+                <td>Min</td>
+                <td>Average</td>
+            </th>
+    `;
+
+    const methodsToReport = Object.keys(jsonReport.info.methods).forEach((acc, key) => {
+        if (contractsToReport.length > 0 && !contractsToReport.includes(jsonReport.info.methods[key].contract)) return;
+        if (jsonReport.info.methods[key].numberOfCalls === 0) return;
+        
+        htmlOutput += `
+            <tr>
+                <td>${jsonReport.info.methods[key].contract}</td>
+                <td>${jsonReport.info.methods[key].name}</td>
+                <td>${Math.max(jsonReport.info.methods[key].gasData)}</td>
+                <td>${Math.min(jsonReport.info.methods[key].gasData)}</td>
+                <td>${Math.round(jsonReport.info.methods[key].gasData.reduce((a,b) => a + b, 0) / jsonReport.info.methods[key].numberOfCalls)}</td>
+            </tr>
+        `;
     });
 
+    htmlOutput += `</table>`
 
-    core.setOutput("github_comment", JSON.stringify(methodsToReport));
+
+
+
+    core.setOutput("github_comment", htmlOutput);
 //   // Get the JSON webhook payload for the event that triggered the workflow
 //   const payload = JSON.stringify(github.context.payload, undefined, 2)
 //   console.log(`The event payload: ${payload}`);
