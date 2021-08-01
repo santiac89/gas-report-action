@@ -94,7 +94,7 @@ const run = async () => {
             status: "success"
         });
 
-    console.debug(runs)
+    console.log(runs)
 
         octokit.rest.issues.createComment({
             ...context.repo,
