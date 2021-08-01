@@ -80,8 +80,9 @@ const run = async () => {
             return;
         }
         
+        let workflow; 
         try {
-            const workflow = await octokit.rest.actions.getWorkflowRun({
+            workflow = await octokit.rest.actions.getWorkflowRun({
                 owner: context.payload.repository.owner.login,
                 repo: context.payload.repository.name,
                 run_id: context.runId,
