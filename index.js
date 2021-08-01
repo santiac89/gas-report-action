@@ -34,9 +34,9 @@ try {
         htmlOutput += `
             <tr>
                 <td>${jsonReport.info.methods[key].contract}</td>
-                <td>${jsonReport.info.methods[key].name}</td>
-                <td>${Math.max(jsonReport.info.methods[key].gasData)}</td>
-                <td>${Math.min(jsonReport.info.methods[key].gasData)}</td>
+                <td>${jsonReport.info.methods[key].method}</td>
+                <td>${Math.max(...jsonReport.info.methods[key].gasData)}</td>
+                <td>${Math.min(...jsonReport.info.methods[key].gasData)}</td>
                 <td>${Math.round(jsonReport.info.methods[key].gasData.reduce((a,b) => a + b, 0) / jsonReport.info.methods[key].numberOfCalls)}</td>
             </tr>
         `;
@@ -45,7 +45,7 @@ try {
     htmlOutput += `</table>`
 
 
-
+    
 
     core.setOutput("github_comment", htmlOutput);
 //   // Get the JSON webhook payload for the event that triggered the workflow
