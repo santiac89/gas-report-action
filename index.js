@@ -57,7 +57,7 @@ try {
     const context = github.context;
     
     if (context.payload.pull_request == null) {
-        console.log('NO PR')
+        console.log('NO PR' , context)
         return;
     }
 
