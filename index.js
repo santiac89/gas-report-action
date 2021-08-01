@@ -61,14 +61,20 @@ const run = async () => {
         const octokit = github.getOctokit(github_token);
         const context = github.context;
         
-        const result = await octokit.rest.repos.listPullRequestsAssociatedWithCommit({
-            owner: context.repo.owner,
-            repo: context.repo.repo,
-            commit_sha: context.payload.sha
-        });
+        let pr = null;
 
-        const pr = result.data.length > 0 && result.data.filter(el => el.state === 'open')[0];
+        try {
+            console.log(context)
+            const result = await octokit.rest.repos.listPullRequestsAssociatedWithCommit({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                commit_sha: context.payload.sha
+            });
 
+            pr = result.data.length > 0 && result.data.filter(el => el.state === 'open')[0];
+        } catch (err) {
+            console.log(err)
+        }
         
         if (!pr) {
             return;
