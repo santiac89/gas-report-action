@@ -88,6 +88,8 @@ const run = async () => {
                 run_id: context.runId,
             });
 
+            console.log("WORKFLOW", workflow)
+
         } catch (err) {
             console.log(1, error)
         }
