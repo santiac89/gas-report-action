@@ -107,7 +107,7 @@ const run = async () => {
             console.log(2, error)
         }
 
-        console.log(runs)
+        console.log(runs.data.workflow_runs);
 
         // octokit.rest.issues.createComment({
         //     ...context.repo,
