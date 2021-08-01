@@ -1,6 +1,8 @@
 const core = require('@actions/core');
 const github = require('@actions/github');
 const fs = require('fs');
+const { parse } = require('node-html-parser');
+const tabletojson = require('tabletojson').Tabletojson;
 
 const run = async () => {
     try {
@@ -11,8 +13,8 @@ const run = async () => {
         const rawReport = fs.readFileSync(reportFilePath);
         const jsonReport = JSON.parse(rawReport);
 
-        let htmlOutput = `<div># Gas usage report <p>${context.runId}</p>
-            <table>
+        let htmlOutput = `<div># Gas usage report - <span id="report_run_id">${context.runId}</span>
+            <table id="report_table_data">
                 <tr>
                     <th>Contract</th>
                     <th>Method</th>
@@ -72,15 +74,31 @@ const run = async () => {
             return;
         }
  
-        const comments = await octokit.rest.issues.listComments({
+        const response = await octokit.rest.issues.listComments({
             owner: context.payload.repository.owner.login,
             repo: context.payload.repository.name,
             issue_number: pull_request.number,
             per_page: 100
         });
 
-        console.log(comments);
+        let comments = response.data;
 
+        comments.sort((a, b) => b.id - a.id);
+
+        let runId;
+
+        comments.some((comment) => {
+            const root = parse(comment.body);
+
+            if (!root.querySelector("#report_run_id")) return false;
+
+            runId = root.querySelector("#report_run_id").text;
+            const tableHtml = root.querySelector("#report_table_data").toString();
+            const previousRun = tabletojson.convert(tableHtml);
+            console.log(runId, previousRun);
+
+            return true;
+        })
         // octokit.rest.issues.createComment({
         //     ...context.repo,
         //     issue_number: pr.number,
@@ -94,3 +112,32 @@ const run = async () => {
 }
 
 run();
+
+
+
+
+
+
+
+
+
+
+console.log(root.firstChild.structure);
+// ul#list
+//   li
+//     #text
+
+console.log(root.querySelector('#list'));
+// { tagName: 'ul',
+//   rawAttrs: 'id="list"',
+//   childNodes:
+//    [ { tagName: 'li',
+//        rawAttrs: '',
+//        childNodes: [Object],
+//        classNames: [] } ],
+//   id: 'list',
+//   classNames: [] }
+console.log(root.toString());
+// <ul id="list"><li>Hello World</li></ul>
+root.set_content('<li>Hello World</li>');
+root.toString();	// <li>Hello World</li>
