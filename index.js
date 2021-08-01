@@ -47,6 +47,9 @@ try {
 
     core.setOutput("github_comment", htmlOutput);
 
+
+
+
     const github_token = core.getInput('token');
 
     if (!github_token) {
@@ -54,21 +57,34 @@ try {
         return;
     }
 
+    const octokit = new github.GitHub(github_token);
     const context = github.context;
     
-    if (context.payload.pull_request == null) {
-        console.log('NO PR' , context)
+    const result = await octokit.rest.repos.listPullRequestsAssociatedWithCommit({
+        owner: context.repo.owner,
+        repo: context.repo.repo,
+        commit_sha: context.payload.sha
+    });
+
+    const pr = result.data.length > 0 && result.data.filter(el => el.state === 'open')[0];
+
+    
+    if (!pr) {
         return;
     }
+    
+    // if (context.payload.pull_request == null) {
+    //     console.log('NO PR' , context)
+    //     return;
+    // }
 
-    const pull_request_number = context.payload.pull_request.number;
+    // const pull_request_number = context.payload.pull_request.number;
 
-    console.log('COMMENT?', pull_request_number)
-    const octokit = new github.GitHub(github_token);
+    // console.log('COMMENT?', pull_request_number)
 
-    const new_comment = octokit.issues.createComment({
+    octokit.issues.createComment({
         ...context.repo,
-        issue_number: pull_request_number,
+        issue_number: pr.number,
         body: htmlOutput
       });
     
