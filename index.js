@@ -68,7 +68,7 @@ const run = async () => {
             const result = await octokit.rest.repos.listPullRequestsAssociatedWithCommit({
                 owner: context.payload.repository.owner.login,
                 repo: context.payload.repository.name,
-                commit_sha: context.payload.sha
+                commit_sha: context.sha
             });
 
             pr = result.data.length > 0 && result.data.filter(el => el.state === 'open')[0];
