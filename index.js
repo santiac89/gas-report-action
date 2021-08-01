@@ -47,8 +47,10 @@ try {
 
     core.setOutput("github_comment", htmlOutput);
 
-    const github_token = core.getInput('github_token');
+    const github_token = core.getInput('token');
 
+    if (!github_token) return;
+    
     const context = github.context;
     
     if (context.payload.pull_request == null) {
