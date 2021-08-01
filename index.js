@@ -2,93 +2,97 @@ const core = require('@actions/core');
 const github = require('@actions/github');
 const fs = require('fs');
 
-try {
-    const reportFilePath = core.getInput('report_file');
-    let contractsToReport = core.getInput('contracts');
+const run = async () => {
+    try {
+        const reportFilePath = core.getInput('report_file');
+        let contractsToReport = core.getInput('contracts');
 
-    if (contractsToReport === '') {
-        contractsToReport = []
-    } else {
-        contractsToReport = contractsToReport.split(',');
-    }
+        if (contractsToReport === '') {
+            contractsToReport = []
+        } else {
+            contractsToReport = contractsToReport.split(',');
+        }
 
-    const rawReport = fs.readFileSync(reportFilePath);
+        const rawReport = fs.readFileSync(reportFilePath);
 
-    const jsonReport = JSON.parse(rawReport);
+        const jsonReport = JSON.parse(rawReport);
 
 
-    let htmlOutput = `<table>
-            <tr>
-                <th>Contract</th>
-                <th>Method</th>
-                <th>Min</th>
-                <th>Max</th>
-                <th>Average</th>
-            </tr>
-    `;
-
-    Object.keys(jsonReport.info.methods).forEach((key) => {
-        if (contractsToReport.length > 0 && !contractsToReport.includes(jsonReport.info.methods[key].contract)) return;
-        if (jsonReport.info.methods[key].numberOfCalls === 0) return;
-        
-        htmlOutput += `
-            <tr>
-                <td>${jsonReport.info.methods[key].contract}</td>
-                <td>${jsonReport.info.methods[key].method}</td>
-                <td>${Math.min(...jsonReport.info.methods[key].gasData)}</td>
-                <td>${Math.max(...jsonReport.info.methods[key].gasData)}</td>
-                <td>${Math.round(jsonReport.info.methods[key].gasData.reduce((a,b) => a + b, 0) / jsonReport.info.methods[key].numberOfCalls)}</td>
-            </tr>
+        let htmlOutput = `<table>
+                <tr>
+                    <th>Contract</th>
+                    <th>Method</th>
+                    <th>Min</th>
+                    <th>Max</th>
+                    <th>Average</th>
+                </tr>
         `;
-    });
 
-    htmlOutput += `</table>`
-    htmlOutput = htmlOutput.replace(/(?:\r\n|\r|\n)/g, '');
+        Object.keys(jsonReport.info.methods).forEach((key) => {
+            if (contractsToReport.length > 0 && !contractsToReport.includes(jsonReport.info.methods[key].contract)) return;
+            if (jsonReport.info.methods[key].numberOfCalls === 0) return;
+            
+            htmlOutput += `
+                <tr>
+                    <td>${jsonReport.info.methods[key].contract}</td>
+                    <td>${jsonReport.info.methods[key].method}</td>
+                    <td>${Math.min(...jsonReport.info.methods[key].gasData)}</td>
+                    <td>${Math.max(...jsonReport.info.methods[key].gasData)}</td>
+                    <td>${Math.round(jsonReport.info.methods[key].gasData.reduce((a,b) => a + b, 0) / jsonReport.info.methods[key].numberOfCalls)}</td>
+                </tr>
+            `;
+        });
 
-    core.setOutput("github_comment", htmlOutput);
+        htmlOutput += `</table>`
+        htmlOutput = htmlOutput.replace(/(?:\r\n|\r|\n)/g, '');
+
+        core.setOutput("github_comment", htmlOutput);
 
 
 
 
-    const github_token = core.getInput('token');
+        const github_token = core.getInput('token');
 
-    if (!github_token) {
-        console.log('NO TOKEN')
-        return;
+        if (!github_token) {
+            console.log('NO TOKEN')
+            return;
+        }
+
+        const octokit = github.getOctokit(github_token);
+        const context = github.context;
+        
+        const result = await octokit.rest.repos.listPullRequestsAssociatedWithCommit({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            commit_sha: context.payload.sha
+        });
+
+        const pr = result.data.length > 0 && result.data.filter(el => el.state === 'open')[0];
+
+        
+        if (!pr) {
+            return;
+        }
+        
+        // if (context.payload.pull_request == null) {
+        //     console.log('NO PR' , context)
+        //     return;
+        // }
+
+        // const pull_request_number = context.payload.pull_request.number;
+
+        // console.log('COMMENT?', pull_request_number)
+
+        octokit.issues.createComment({
+            ...context.repo,
+            issue_number: pr.number,
+            body: htmlOutput
+        });
+        
+
+    } catch (error) {
+        core.setFailed(error.message);
     }
-
-    const octokit = github.getOctokit(github_token);
-    const context = github.context;
-    
-    const result = await octokit.rest.repos.listPullRequestsAssociatedWithCommit({
-        owner: context.repo.owner,
-        repo: context.repo.repo,
-        commit_sha: context.payload.sha
-    });
-
-    const pr = result.data.length > 0 && result.data.filter(el => el.state === 'open')[0];
-
-    
-    if (!pr) {
-        return;
-    }
-    
-    // if (context.payload.pull_request == null) {
-    //     console.log('NO PR' , context)
-    //     return;
-    // }
-
-    // const pull_request_number = context.payload.pull_request.number;
-
-    // console.log('COMMENT?', pull_request_number)
-
-    octokit.issues.createComment({
-        ...context.repo,
-        issue_number: pr.number,
-        body: htmlOutput
-      });
-    
-
-} catch (error) {
-    core.setFailed(error.message);
 }
+
+run();
