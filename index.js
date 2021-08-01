@@ -18,13 +18,13 @@ try {
 
 
     let htmlOutput = `<table>
-            <th>
-                <td>Contract</td>
-                <td>Method</td>
-                <td>Max</td>
-                <td>Min</td>
-                <td>Average</td>
-            </th>
+            <tr>
+                <th>Contract</th>
+                <th>Method</th>
+                <th>Min</th>
+                <th>Max</th>
+                <th>Average</th>
+            </tr>
     `;
 
     Object.keys(jsonReport.info.methods).forEach((key) => {
@@ -35,8 +35,8 @@ try {
             <tr>
                 <td>${jsonReport.info.methods[key].contract}</td>
                 <td>${jsonReport.info.methods[key].method}</td>
-                <td>${Math.max(...jsonReport.info.methods[key].gasData)}</td>
                 <td>${Math.min(...jsonReport.info.methods[key].gasData)}</td>
+                <td>${Math.max(...jsonReport.info.methods[key].gasData)}</td>
                 <td>${Math.round(jsonReport.info.methods[key].gasData.reduce((a,b) => a + b, 0) / jsonReport.info.methods[key].numberOfCalls)}</td>
             </tr>
         `;
