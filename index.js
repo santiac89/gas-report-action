@@ -49,19 +49,23 @@ try {
 
     const github_token = core.getInput('token');
 
-    if (!github_token) return;
+    if (!github_token) {
+        console.log('NO TOKEN')
+        return;
+    }
 
     const context = github.context;
     
     if (context.payload.pull_request == null) {
+        console.log('NO PR')
         return;
     }
 
     const pull_request_number = context.payload.pull_request.number;
 
+    console.log('COMMENT?', pull_request_number)
     const octokit = new github.GitHub(github_token);
 
-    console.log('COMMENT?')
     const new_comment = octokit.issues.createComment({
         ...context.repo,
         issue_number: pull_request_number,
