@@ -80,14 +80,21 @@ const run = async () => {
             return;
         }
         
-        // if (context.payload.pull_request == null) {
-        //     console.log('NO PR' , context)
-        //     return;
-        // }
+        const workflow = await octokit.rest.actions.getWorkflowRun({
+            owner: context.payload.repository.owner.login,
+            repo: context.payload.repository.name,
+            run_id: context.runId,
+        });
 
-        // const pull_request_number = context.payload.pull_request.number;
 
-        // console.log('COMMENT?', pull_request_number)
+        const runs = await octokit.rest.actions.listWorkflowRuns({
+            owner: context.payload.repository.owner.login,
+            repo: context.payload.repository.name,
+            workflow_id: workflow.workflow_id,
+            status: "success"
+        });
+
+    console.debug(runs)
 
         octokit.rest.issues.createComment({
             ...context.repo,
