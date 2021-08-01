@@ -57,7 +57,7 @@ const run = async () => {
         let pull_request = null;
 
         try {
-            console.log(context);
+            // console.log(context);
 
             const result = await octokit.rest.repos.listPullRequestsAssociatedWithCommit({
                 owner: context.payload.repository.owner.login,
@@ -89,7 +89,7 @@ const run = async () => {
 
         comments.some((comment) => {
             const root = parse(comment.body);
-
+                console.log(root)
             if (!root.querySelector("#report_run_id")) return false;
 
             runId = root.querySelector("#report_run_id").text;
