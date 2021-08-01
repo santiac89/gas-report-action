@@ -90,7 +90,7 @@ const run = async () => {
         comments.some((comment) => {
             const root = parse(comment.body);
                 console.log(root)
-            if (!root.querySelector("#report_run_id")) return false;
+            // if (!root.querySelector("#report_run_id")) return false;
 
             runId = root.querySelector("#report_run_id").text;
             const tableHtml = root.querySelector("#report_table_data").toString();
