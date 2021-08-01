@@ -100,7 +100,7 @@ const run = async () => {
             runs = await octokit.rest.actions.listWorkflowRuns({
                 owner: context.payload.repository.owner.login,
                 repo: context.payload.repository.name,
-                workflow_id: workflow.workflow_id,
+                workflow_id: workflow.data.workflow_id,
                 status: "success"
             });
         } catch (error) {
