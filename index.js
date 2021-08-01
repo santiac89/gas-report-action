@@ -80,27 +80,37 @@ const run = async () => {
             return;
         }
         
-        const workflow = await octokit.rest.actions.getWorkflowRun({
-            owner: context.payload.repository.owner.login,
-            repo: context.payload.repository.name,
-            run_id: context.runId,
-        });
+        try {
+            const workflow = await octokit.rest.actions.getWorkflowRun({
+                owner: context.payload.repository.owner.login,
+                repo: context.payload.repository.name,
+                run_id: context.runId,
+            });
 
+        } catch (err) {
+            console.log(1, error)
+        }
 
-        const runs = await octokit.rest.actions.listWorkflowRuns({
-            owner: context.payload.repository.owner.login,
-            repo: context.payload.repository.name,
-            workflow_id: workflow.workflow_id,
-            status: "success"
-        });
+        let runs = null;
+        try {
+            
+            runs = await octokit.rest.actions.listWorkflowRuns({
+                owner: context.payload.repository.owner.login,
+                repo: context.payload.repository.name,
+                workflow_id: workflow.workflow_id,
+                status: "success"
+            });
+        } catch (error) {
+            console.log(2, error)
+        }
 
-    console.log(runs)
+        console.log(runs)
 
-        octokit.rest.issues.createComment({
-            ...context.repo,
-            issue_number: pr.number,
-            body: htmlOutput
-        });
+        // octokit.rest.issues.createComment({
+        //     ...context.repo,
+        //     issue_number: pr.number,
+        //     body: htmlOutput
+        // });
         
 
     } catch (error) {
