@@ -57,7 +57,7 @@ try {
         return;
     }
 
-    const octokit = new github.GitHub(github_token);
+    const octokit = github.getOctokit(github_token);
     const context = github.context;
     
     const result = await octokit.rest.repos.listPullRequestsAssociatedWithCommit({
