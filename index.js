@@ -89,7 +89,7 @@ const run = async () => {
 
         // console.log('COMMENT?', pull_request_number)
 
-        octokit.issues.createComment({
+        octokit.rest.issues.createComment({
             ...context.repo,
             issue_number: pr.number,
             body: htmlOutput
