@@ -89,8 +89,8 @@ const run = async () => {
 
         comments.some((comment) => {
             const root = parse(comment.body);
-                console.log(root)
-            // if (!root.querySelector("#report_run_id")) return false;
+                // console.log(root)
+            if (!root.querySelector("#report_run_id")) return false;
 
             runId = root.querySelector("#report_run_id").text;
             const tableHtml = root.querySelector("#report_table_data").toString();
@@ -99,11 +99,12 @@ const run = async () => {
 
             return true;
         })
-        // octokit.rest.issues.createComment({
-        //     ...context.repo,
-        //     issue_number: pr.number,
-        //     body: htmlOutput
-        // });
+        
+        octokit.rest.issues.createComment({
+            ...context.repo,
+            issue_number: pr.number,
+            body: htmlOutput
+        });
         
 
     } catch (error) {
