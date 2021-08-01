@@ -18,7 +18,8 @@ const run = async () => {
         const jsonReport = JSON.parse(rawReport);
 
 
-        let htmlOutput = `<table>
+        let htmlOutput = `<div># Gas usage report <p>${context.runId}</p>
+            <table>
                 <tr>
                     <th>Contract</th>
                     <th>Method</th>
@@ -26,6 +27,7 @@ const run = async () => {
                     <th>Max</th>
                     <th>Average</th>
                 </tr>
+                
         `;
 
         Object.keys(jsonReport.info.methods).forEach((key) => {
@@ -43,71 +45,51 @@ const run = async () => {
             `;
         });
 
-        htmlOutput += `</table>`
+        htmlOutput += `</table> </div>`
         htmlOutput = htmlOutput.replace(/(?:\r\n|\r|\n)/g, '');
 
         core.setOutput("github_comment", htmlOutput);
 
 
 
-
         const github_token = core.getInput('token');
 
         if (!github_token) {
-            console.log('NO TOKEN')
+            console.log('Missing Github token, skipping comment post.');
             return;
         }
 
         const octokit = github.getOctokit(github_token);
         const context = github.context;
         
-        let pr = null;
+        let pull_request = null;
 
         try {
-            console.log(context)
+            console.log(context);
+
             const result = await octokit.rest.repos.listPullRequestsAssociatedWithCommit({
                 owner: context.payload.repository.owner.login,
                 repo: context.payload.repository.name,
                 commit_sha: context.sha
             });
 
-            pr = result.data.length > 0 && result.data.filter(el => el.state === 'open')[0];
+            pull_request = result.data.length > 0 && result.data.filter(el => el.state === 'open')[0];
         } catch (err) {
             console.log(err)
         }
         
-        if (!pr) {
+        if (!pull_request) {
             return;
         }
-        
-        let workflow; 
-        try {
-            workflow = await octokit.rest.actions.getWorkflowRun({
-                owner: context.payload.repository.owner.login,
-                repo: context.payload.repository.name,
-                run_id: context.runId,
-            });
+ 
+        const comments = await octokit.rest.issues.listComments({
+            owner: context.payload.repository.owner.login,
+            repo: context.payload.repository.name,
+            issue_number: pull_request.number,
+            per_page: 100
+        });
 
-            console.log("WORKFLOW", workflow)
-
-        } catch (err) {
-            console.log(1, error)
-        }
-
-        let runs = null;
-        try {
-            
-            runs = await octokit.rest.actions.listWorkflowRuns({
-                owner: context.payload.repository.owner.login,
-                repo: context.payload.repository.name,
-                workflow_id: workflow.data.workflow_id,
-                status: "success"
-            });
-        } catch (error) {
-            console.log(2, error)
-        }
-
-        console.log(runs.data.workflow_runs);
+        console.log(comments);
 
         // octokit.rest.issues.createComment({
         //     ...context.repo,
