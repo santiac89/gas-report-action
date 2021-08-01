@@ -1,4 +1,4 @@
-name: 'Hello World'
+name: 'Gas Report parse'
 description: 'Greet someone and record the time'
 inputs:
   report_file:  # id of input
@@ -8,7 +8,7 @@ inputs:
   contracts:  # id of input
     description: 'The contracts names to report'
     required: false
-    default: []
+    default: ''
 outputs:
   github_comment: # id of output
     description: 'The result formatted with markdown for creating a comment in Github'
