@@ -66,8 +66,8 @@ const run = async () => {
         try {
             console.log(context)
             const result = await octokit.rest.repos.listPullRequestsAssociatedWithCommit({
-                owner: context.repository.owner.login,
-                repo: context.repository.name,
+                owner: context.payload.repository.owner.login,
+                repo: context.payload.repository.name,
                 commit_sha: context.payload.sha
             });
 
