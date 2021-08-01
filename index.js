@@ -89,7 +89,7 @@ const run = async () => {
 
         comments.some((comment) => {
             const root = parse(comment.body);
-                // console.log(root)
+                console.log(root)
             if (!root.querySelector("#report_run_id")) return false;
 
             runId = root.querySelector("#report_run_id").text;
@@ -100,11 +100,11 @@ const run = async () => {
             return true;
         })
 
-        octokit.rest.issues.createComment({
-            ...context.repo,
-            issue_number: pull_request.number,
-            body: htmlOutput
-        });
+        // octokit.rest.issues.createComment({
+        //     ...context.repo,
+        //     issue_number: pull_request.number,
+        //     body: htmlOutput
+        // });
         
 
     } catch (error) {
