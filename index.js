@@ -4,19 +4,12 @@ const fs = require('fs');
 
 const run = async () => {
     try {
+        const context = github.context;
         const reportFilePath = core.getInput('report_file');
-        let contractsToReport = core.getInput('contracts');
-
-        if (contractsToReport === '') {
-            contractsToReport = []
-        } else {
-            contractsToReport = contractsToReport.split(',');
-        }
+        const contractsToReport = core.getInput('contracts') == '' ? [] : core.getInput('contracts').split(',');
 
         const rawReport = fs.readFileSync(reportFilePath);
-
         const jsonReport = JSON.parse(rawReport);
-
 
         let htmlOutput = `<div># Gas usage report <p>${context.runId}</p>
             <table>
@@ -50,8 +43,6 @@ const run = async () => {
 
         core.setOutput("github_comment", htmlOutput);
 
-
-
         const github_token = core.getInput('token');
 
         if (!github_token) {
@@ -60,7 +51,6 @@ const run = async () => {
         }
 
         const octokit = github.getOctokit(github_token);
-        const context = github.context;
         
         let pull_request = null;
 
