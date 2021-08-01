@@ -99,10 +99,10 @@ const run = async () => {
 
             return true;
         })
-        
+
         octokit.rest.issues.createComment({
             ...context.repo,
-            issue_number: pr.number,
+            issue_number: pull_request.number,
             body: htmlOutput
         });
         
