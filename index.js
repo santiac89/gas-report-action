@@ -27,7 +27,7 @@ try {
             </th>
     `;
 
-    const methodsToReport = Object.keys(jsonReport.info.methods).forEach((acc, key) => {
+    Object.keys(jsonReport.info.methods).forEach((key) => {
         if (contractsToReport.length > 0 && !contractsToReport.includes(jsonReport.info.methods[key].contract)) return;
         if (jsonReport.info.methods[key].numberOfCalls === 0) return;
         
