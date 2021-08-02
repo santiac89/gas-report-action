@@ -8,7 +8,7 @@ It also passes the value as an output of the step in `parsed_gas_report` as an a
 ## Example result in comment
 
 <h1>Gas usage report - Run No. #<span>1091293479</span></h1>
-<h3>Commit SHA: <span>cdf0d2a3ec308a962668278f80f1e5426ea3b121</span> - Compared to d2ccbdf337a6ad3e76060ce7d16e23f8480f53a2</h3>
+<h3>Commit SHA: <span>cdf0d2</span> - Compared to d2ccbd</h3>
     <table>            
         <tr>
             <th>Contract</th>
