@@ -76,8 +76,7 @@ const getCurrentResults = (context, filePath, contractsToReport) => {
 
 const generateHtmlComment = (currentResults, previousResults) => {
     let htmlOutput = `<h1>Gas usage report - Run No. #<span id="report_run_id">${currentResults.id}</span> </h1>
-        <h3>Commit SHA: <span id="report_commit">${currentResults.commit}</span></h3>
-        ${previousResults.commit ? `<h3>Compared to ${previousResults.commit}</h3>` : ''}
+        <h3>Commit SHA: <span id="report_commit">${currentResults.commit}</span> ${previousResults.commit ? `- Compared to ${previousResults.commit}` : ''}</h3>
         <table id="report_table_data">
             <tr>
                 <th>Contract</th>
@@ -110,7 +109,7 @@ const generateHtmlComment = (currentResults, previousResults) => {
                 <td>${currentResult.Min}</td>
                 <td>${currentResult.Max}</td>
                 <td>${currentResult.Avg}</td>
-                ${diff ? `<td style="color: ${diff.Avg > 0 ? 'red' : 'green'};">(${diff.Avg}%)</td>` : ''}
+                ${diff ? `<td style="color: ${diff.Avg > 0 ? 'red' : 'green'};">${diff.Avg.toFixed(2)} %</td>` : ''}
             </tr>
         `;
     });
