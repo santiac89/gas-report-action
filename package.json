@@ -28,7 +28,9 @@
     "solidity",
     "ethereum",
     "eth-gas-report",
-    "mocha"
+    "mocha",
+    "truffle",
+    "test"
   ],
   "author": "Santiago Carullo",
   "license": "ISC",
