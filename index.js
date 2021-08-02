@@ -155,7 +155,7 @@ const run = async () => {
         const contractsToReport = core.getInput('contracts') == '' ? [] : core.getInput('contracts').split(',');
 
         const currentRun = getCurrentResults(context, reportFilePath, contractsToReport);
-        core.setOutput("json_gas_report", currentRun);
+        core.setOutput("parsed_gas_report", currentRun);
 
         if (!github_token) {
             console.log('Missing Github token, skipping comment post.');
