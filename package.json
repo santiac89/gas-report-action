@@ -1,0 +1,33 @@
+{
+  "name": "gas-report-action",
+  "version": "0.0.37",
+  "description": "A Github Action that parses result from eth-gas-reporter and creates a comment in the PR with the results.",
+  "main": "index.js",
+  "dependencies": {
+    "node-html-parser": "^4.1.2",
+    "tabletojson": "^2.0.7"
+  },
+  "devDependencies": {
+    "eslint": "^7.32.0"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/santiac89/gas-report-action.git"
+  },
+  "keywords": [
+    "github",
+    "action",
+    "eth",
+    "gas",
+    "report"
+  ],
+  "author": "Santiago Carullo",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/santiac89/gas-report-action/issues"
+  },
+  "homepage": "https://github.com/santiac89/gas-report-action#readme"
+}
