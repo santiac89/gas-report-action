@@ -4,34 +4,59 @@ const fs = require('fs');
 const { parse } = require('node-html-parser');
 const tabletojson = require('tabletojson').Tabletojson;
 
-const getPreviousResults = async (context, pull_request, octokit) => {
-    const response = await octokit.rest.issues.listComments({
-        owner: context.payload.repository.owner.login,
-        repo: context.payload.repository.name,
-        issue_number: pull_request.number,
-        per_page: 100
-    });
+function *map(a, fn) {
+    for(let x of a)
+        yield fn(x);
+}
 
-    let comments = response.data;
+function find(a, fn) {
+    for(let x of a)
+        if (fn(x))
+            return x;
+}
 
-    comments.sort((a, b) => b.id - a.id);
-
-    let previousRunId;
-    let previousRunData = [];
-    let previousRunCommit;
-
-    comments.some((comment) => {
-        const root = parse(comment.body);
-        if (!root.querySelector("#report_run_id") || !root.querySelector("#report_table_data") || !root.querySelector("#report_commit")) return false;
-        previousRunId = root.querySelector("#report_run_id").text;
-        previousRunCommit = root.querySelector("#report_commit").text;
-        const tableHtml = root.querySelector("#report_table_data").toString();
-        [ previousRunData ] = tabletojson.convert(tableHtml);
-        return true;
-    });
-
-
+const parseCommentAsRun = comment => {
+    const root = parse(comment.body);
+    if (!root.querySelector("#report_run_id") || !root.querySelector("#report_table_data") || !root.querySelector("#report_commit")) return null;
+    const previousRunId = root.querySelector("#report_run_id").text;
+    const previousRunCommit = root.querySelector("#report_commit").text;
+    const tableHtml = root.querySelector("#report_table_data").toString();
+    const [ previousRunData ] = tabletojson.convert(tableHtml);
     return { id: previousRunId, data: previousRunData, commit: previousRunCommit };
+}
+
+const getPreviousResultFromComments = async (context, pull_request, octokit) => {
+    let currentPage = 0;
+    let lastPage = false;
+    let comments = [];
+    let lastRun = null;
+
+    while (!lastPage) {
+        const response = await octokit.rest.issues.listComments({
+            owner: context.payload.repository.owner.login,
+            repo: context.payload.repository.name,
+            issue_number: pull_request.number,
+            per_page: 100,
+            page: currentPage
+        });
+
+        comments = response.data;
+        comments.sort((a, b) => b.id - a.id);
+
+        const possibleLastRun = find(map(comments, parseCommentAsRun), parsedComment => parsedComment);
+
+        if (possibleLastRun) {
+            lastRun = possibleLastRun;
+        }
+
+        if (response.data.length < 100) {
+            return lastRun;
+        }
+
+        currentPage++;
+    }
+
+    return;
 }
 
 const getAssociatedPullRequest = async (context, octokit) => {
@@ -76,7 +101,7 @@ const getCurrentResults = (context, filePath, contractsToReport) => {
 
 const generateHtmlComment = (currentResults, previousResults) => {
     let htmlOutput = `<h1>Gas usage report - Run No. #<span id="report_run_id">${currentResults.id}</span> </h1>
-        <h3>Commit SHA: <span id="report_commit">${currentResults.commit}</span> ${previousResults.commit ? `- Compared to ${previousResults.commit}` : ''}</h3>
+        <h3>Commit SHA: <span id="report_commit">${currentResults.commit}</span> ${previousResults ? `- Compared to ${previousResults.commit}` : ''}</h3>
         <table id="report_table_data">
             <tr>
                 <th>Contract</th>
@@ -84,17 +109,18 @@ const generateHtmlComment = (currentResults, previousResults) => {
                 <th>Min</th>
                 <th>Max</th>
                 <th>Avg</th>
-                ${previousResults.commit ? '<th>Avg. Diff.</th>' : ''}
+                ${previousResults ? '<th>Avg. Diff.</th>' : ''}
             </tr>
             
     `;
 
     currentResults.data.forEach((currentResult) => {
-        const previousResult = previousResults.data.find(previousResult => previousResult.Contract === currentResult.Contract && previousResult.Method === currentResult.Method);
-
         let diff;
 
-        if (previousResult) {
+        if (previousResults) {
+            const previousResult = previousResults.data
+                .find(previousResult => previousResult.Contract === currentResult.Contract && previousResult.Method === currentResult.Method);
+                
             diff = {
                 Min: (currentResult.Min * 100 / previousResult.Min) - 100,
                 Max: (currentResult.Max * 100 / previousResult.Max) - 100,
@@ -144,7 +170,7 @@ const run = async () => {
             return;
         }
 
-        const previousRun = await getPreviousResults(context, pull_request, octokit);
+        const previousRun = await getPreviousResultFromComments(context, pull_request, octokit);
         
         const commentHtml = generateHtmlComment(currentRun, previousRun);
 
