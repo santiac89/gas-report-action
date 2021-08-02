@@ -143,7 +143,7 @@ const run = async () => {
             return;
         }
 
-        const previousRun = await getPreviousResults(context, octokit);
+        const previousRun = await getPreviousResults(context, pull_request, octokit);
         
         const commentHtml = generateHtmlComment(currentRun, previousRun);
 
