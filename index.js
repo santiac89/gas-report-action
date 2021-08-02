@@ -85,6 +85,7 @@ const generateHtmlComment = (currentResults, previousResults) => {
                 <th>Min</th>
                 <th>Max</th>
                 <th>Avg</th>
+                ${previousResults.commit ? '<th>Avg. Diff.</th>' : ''}
             </tr>
             
     `;
@@ -106,9 +107,10 @@ const generateHtmlComment = (currentResults, previousResults) => {
             <tr>
                 <td>${currentResult.Contract}</td>
                 <td>${currentResult.Method}</td> 
-                <td>${currentResult.Min} ${diff ? `<span style="color: ${diff.Min > 0 ? 'red' : 'green'};">(${diff.Min}%)</span>` : ''}</td>
-                <td>${currentResult.Max} ${diff ? `<span style="color: ${diff.Max > 0 ? 'red' : 'green'};">(${diff.Max}%)</span>` : ''}</td>
-                <td>${currentResult.Avg} ${diff ? `<span style="color: ${diff.Avg > 0 ? 'red' : 'green'};">(${diff.Avg}%)</span>` : ''}</td>
+                <td>${currentResult.Min}</td>
+                <td>${currentResult.Max}</td>
+                <td>${currentResult.Avg}</td>
+                ${diff ? `<td style="color: ${diff.Avg > 0 ? 'red' : 'green'};">(${diff.Avg}%)</td>` : ''}
             </tr>
         `;
     });
