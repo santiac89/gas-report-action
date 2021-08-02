@@ -75,7 +75,7 @@ const getCurrentResults = (context, filePath, contractsToReport) => {
 }
 
 const generateHtmlComment = (currentResults, previousResults) => {
-    let htmlOutput = `<h1>Gas usage report - Run No. #<span id="report_run_id">${currentResults.runId}</span> </h1>
+    let htmlOutput = `<h1>Gas usage report - Run No. #<span id="report_run_id">${currentResults.id}</span> </h1>
         <h3>Commit SHA: <span id="report_commit">${currentResults.commit}</span></h3>
         ${previousResults.commit ? `<h3>Compared to ${previousResults.commit}</h3>` : ''}
         <table id="report_table_data">
