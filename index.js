@@ -109,7 +109,7 @@ const generateHtmlComment = (currentResults, previousResults) => {
                 <td>${currentResult.Min}</td>
                 <td>${currentResult.Max}</td>
                 <td>${currentResult.Avg}</td>
-                ${diff ? `<td style="color: ${diff.Avg > 0 ? 'red' : 'green'};">${diff.Avg.toFixed(2)} %</td>` : ''}
+                ${diff ? `<td>${diff.Avg === 0 ? '-' : `${diff.Avg.toFixed(2)} %`}</td>` : ''}
             </tr>
         `;
     });
