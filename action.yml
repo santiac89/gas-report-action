@@ -1,4 +1,4 @@
-name: 'Gas Report in PR comment'
+name: 'Comment gas report from eth-gas-report'
 icon: activity
 color: purple
 description: 'Parses the result file from 'eth-gas-reporter' and creates a gas usage report in the PR.'

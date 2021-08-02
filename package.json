@@ -24,7 +24,11 @@
     "action",
     "eth",
     "gas",
-    "report"
+    "report",
+    "solidity",
+    "ethereum",
+    "eth-gas-report",
+    "mocha"
   ],
   "author": "Santiago Carullo",
   "license": "ISC",
