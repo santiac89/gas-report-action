@@ -1,8 +1,9 @@
 name: 'Comment gas report from eth-gas-report'
+description: 'Parses the result file from "eth-gas-reporter" and creates a gas usage report in the PR.'
 branding:
   icon: 'activity'
   color: 'purple'
-description: 'Parses the result file from 'eth-gas-reporter' and creates a gas usage report in the PR.'
+
 inputs:
   token:
     description: 'The Github token for posting a comment on the PR.'
@@ -15,9 +16,11 @@ inputs:
     description: 'The contracts names to report, used to filter other contracts from the report.'
     required: false
     default: ''
+
 outputs:
   parsed_gas_report: # id of output
-    description: 'An array like structure containing min, max and avg gas usage of each contract method.'
+  description: 'An array like structure containing min, max and avg gas usage of each contract method.'
+
 runs:
   using: 'node12'
   main: 'index.js'
