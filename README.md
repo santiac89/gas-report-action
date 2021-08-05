@@ -18,7 +18,7 @@ jobs:
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v2
     - run: npm i
-    - run: CI=true npm test  # When CI environment variable is set to true eth-gas-reporter will create a 'gasReporterOutput.json' file
+    - run: CI=true truffle test  # When CI environment variable is set to true eth-gas-reporter will create a 'gasReporterOutput.json' file
     - name: Generate gas usage report
       id: gas_report
       uses: santiac89/gas-report-action@latest
