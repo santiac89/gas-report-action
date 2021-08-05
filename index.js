@@ -118,14 +118,16 @@ const generateHtmlComment = (currentResults, previousResults) => {
         let diff;
 
         if (previousResults) {
-            const previousResult = previousResults.data
+            const foundResult = previousResults.data
                 .find(previousResult => previousResult.Contract === currentResult.Contract && previousResult.Method === currentResult.Method);
-                
-            diff = {
-                Min: (currentResult.Min * 100 / previousResult.Min) - 100,
-                Max: (currentResult.Max * 100 / previousResult.Max) - 100,
-                Avg: (currentResult.Avg * 100 / previousResult.Avg) - 100
-            }
+
+            if (foundResult) {
+                diff = {
+                    Min: (currentResult.Min * 100 / foundResult.Min) - 100,
+                    Max: (currentResult.Max * 100 / foundResult.Max) - 100,
+                    Avg: (currentResult.Avg * 100 / foundResult.Avg) - 100
+                }
+            } 
         }
 
         htmlOutput += `
