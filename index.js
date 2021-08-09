@@ -157,7 +157,7 @@ const run = async () => {
         const contractsToReport = core.getInput('contracts') == '' ? [] : core.getInput('contracts').split(',');
 
 
-        console.log(`Using ${{ report_file: reportFilePath, contracts: contractsToReport }}`);
+        console.log(`Using ${JSON.stringify({ report_file: reportFilePath, contracts: contractsToReport })}`);
 
         const currentRun = getCurrentResults(context, reportFilePath, contractsToReport);
         core.setOutput("parsed_gas_report", currentRun);
