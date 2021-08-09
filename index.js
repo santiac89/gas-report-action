@@ -156,6 +156,9 @@ const run = async () => {
         const reportFilePath = core.getInput('report_file');
         const contractsToReport = core.getInput('contracts') == '' ? [] : core.getInput('contracts').split(',');
 
+
+        console.log(`Using ${{ report_file: reportFilePath, contracts: contractsToReport }}`);
+
         const currentRun = getCurrentResults(context, reportFilePath, contractsToReport);
         core.setOutput("parsed_gas_report", currentRun);
 
@@ -169,6 +172,7 @@ const run = async () => {
         let pull_request = await getAssociatedPullRequest(context, octokit);
         
         if (!pull_request) {
+            console.log(`No pull request found for commit ${context.sha}`);
             return;
         }
 
